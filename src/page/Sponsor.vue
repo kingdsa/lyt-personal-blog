@@ -107,17 +107,15 @@
 </template>
 
 <script setup lang="ts">
-import BackgroundPlate from '../components/background/BackgroundPlate.vue'
-import {VaeStore} from "../store";
+import BackgroundPlate from '@/components/background/BackgroundPlate.vue'
+import {VaeStore} from "@/store";
 import {storeToRefs} from "pinia";
 import {inject, h, reactive, ref, watch} from "vue";
 import {NButton, NGradientText, NTag, useMessage, useNotification} from "naive-ui";
 import {useRouter} from "vue-router";
 const store = VaeStore();
-let {clientWidth,distanceToBottom,distanceToTop,isdarkTheme} = storeToRefs(store);
-const message = useMessage()
+let {clientWidth,isdarkTheme} = storeToRefs(store);
 const tableShow=ref(false);
-const notification = useNotification();
 const router = useRouter()
 const queryData=reactive({
   limit:10,

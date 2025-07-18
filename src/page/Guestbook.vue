@@ -14,9 +14,9 @@
 </template>
 
 <script setup lang="ts">
-import BackgroundPlate from '../components/background/BackgroundPlate.vue'
-import GuestbookJs from '../components/Guestbook/guestbook-js.vue'
-import {VaeStore} from "../store";
+import BackgroundPlate from '@/components/background/BackgroundPlate.vue'
+import GuestbookJs from '@/components/Guestbook/guestbook-js.vue'
+import {VaeStore} from "@/store";
 import {storeToRefs} from "pinia";
 import {inject, onActivated, ref} from "vue";
 import {useMessage} from "naive-ui";

@@ -21,35 +21,23 @@
 </template>
 
 <script setup lang="ts">
-import BackgroundPlate from '../components/background/BackgroundPlate.vue'
-import DiaryModule from '../components/Diary/DiaryModule.vue';
+import BackgroundPlate from '@/components/background/BackgroundPlate.vue'
+import DiaryModule from '@/components/Diary/DiaryModule.vue';
 import {PawOutline} from '@vicons/ionicons5'
-import {VaeStore} from "../store";
+import {VaeStore} from "@/store";
 //获取后端方法
-// import {getDiarysAll} from '../utils/api'
 import {storeToRefs} from "pinia";
 import {inject, onActivated, reactive, ref, watch} from "vue";
-import {useMessage} from "naive-ui";
 import {onBeforeRouteLeave} from "vue-router";
 const store = VaeStore();
-let {clientWidth,distanceToBottom,distanceToTop,isdarkTheme} = storeToRefs(store);
+let {clientWidth,distanceToBottom,distanceToTop} = storeToRefs(store);
 const pageData=reactive({page:1,limit:8,apple:'1'});
-const message = useMessage()
-
-//获取所有日记
-const  get_DiarysAll=()=>{
-      //调用后端接口
-}
-get_DiarysAll();
-
-
 
 //监听滚动条
 watch(() => distanceToBottom.value, (newValue, oldValue) => {
   //如果滚动到了底部
   if(newValue<60 ){
     pageData.page++;
-    get_DiarysAll();
   }
 });
 

@@ -24,9 +24,9 @@ import {ref,reactive,watch ,inject, onActivated} from "vue"
 //这里发送请求方法
 // import  {getArticleAll} from '../utils/api'
 
-import ArticleModule from '../components/Article/ArticleModule.vue'
-import ArticleRightModule from '../components/Article/ArticleRightModule.vue'
-import {VaeStore} from "../store";
+import ArticleModule from '@/components/Article/ArticleModule.vue'
+import ArticleRightModule from '@/components/Article/ArticleRightModule.vue'
+import {VaeStore} from "@/store";
 import {storeToRefs} from "pinia";
 import {useMessage} from "naive-ui";
 import {onBeforeRouteLeave} from "vue-router";

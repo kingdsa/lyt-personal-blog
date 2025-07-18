@@ -143,7 +143,7 @@ import { ref} from "vue";
 import { useRoute, useRouter} from "vue-router";
 import {GolfOutline} from '@vicons/ionicons5'
 import {storeToRefs} from "pinia";
-import {VaeStore} from "../store";
+import {VaeStore} from "@/store";
 import {useMessage, useNotification} from "naive-ui";
 const route = useRoute()
 const router = useRouter()

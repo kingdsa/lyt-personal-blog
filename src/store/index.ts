@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia'
 import {Names} from './store-name'
-import {getCookie} from  '../utils/auth'
+import {getCookie} from  '@/utils/auth'
 
 export const VaeStore=defineStore(Names.StoreName,{
     state:()=>{

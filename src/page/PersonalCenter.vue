@@ -11,16 +11,14 @@
 </template>
 
 <script setup lang="ts">
-import BackgroundPlate from '../components/background/BackgroundPlate.vue'
-import InfoCard from '../components/PersonalCenter/InfoCard.vue'
-import {VaeStore} from "../store";
+import BackgroundPlate from '@/components/background/BackgroundPlate.vue'
+import InfoCard from '@/components/PersonalCenter/InfoCard.vue'
+import {VaeStore} from "@/store";
 import {storeToRefs} from "pinia";
 import {inject, onActivated, ref} from "vue";
-import {useMessage} from "naive-ui";
 import {onBeforeRouteLeave} from "vue-router";
 const store = VaeStore();
-let {clientWidth,distanceToBottom,distanceToTop,isdarkTheme} = storeToRefs(store);
-const message = useMessage()
+let {clientWidth,distanceToTop,isdarkTheme} = storeToRefs(store);
 
 //滚动条回到原位
 const scrollBy = inject<Function>('scrollBy');

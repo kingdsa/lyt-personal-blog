@@ -1,6 +1,6 @@
 //公共组件方法封装
 import {computed} from "vue";
-import {VaeStore} from "../store";
+import {VaeStore} from "@/store";
 import {storeToRefs} from "pinia";
 const store = VaeStore();
 let {clientWidth} = storeToRefs(store);
