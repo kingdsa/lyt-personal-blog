@@ -51,6 +51,7 @@ import { zhCN, dateZhCN } from 'naive-ui'
 const store = VaeStore();
 const scrollbarRef2 = ref<HTMLElement | undefined>(undefined);
 import { useDark, useToggle } from '@vueuse/core'
+import System_Settings_Api from '@/apis/system-settings';
 const showLoading=ref(false);
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
@@ -70,6 +71,9 @@ const scroll=(e:any)=> {
 
 }
 
+const onAddAccessRecord = () => {
+  System_Settings_Api.addAccessRecord()
+}
 
 const scrollByTop=(x: number)=>{
   scrollbarRef.value.scrollTo({
@@ -83,6 +87,8 @@ provide('scrollBy', scrollByTop)
 onMounted(() => {
   getWindowResize()
   window.addEventListener('resize', getWindowResize)
+  // 添加访客记录
+  onAddAccessRecord()
 })
 // 获取屏幕尺寸
 const getWindowResize = function () {
