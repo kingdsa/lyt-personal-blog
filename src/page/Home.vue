@@ -82,10 +82,10 @@
 
 <script setup lang="ts">
 import { onActivated, ref, inject } from "vue";
-import { VaeStore } from "../store";
+import { VaeStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { Container } from "@tsparticles/engine";
-import { wucaizhixie } from "../utils/particlesFiles";
+import { wucaizhixie } from "@/utils/particlesFiles";
 import { useDark, useToggle } from "@vueuse/core";
 import { onBeforeRouteLeave } from "vue-router";
 const isDark = useDark();

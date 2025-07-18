@@ -40,18 +40,17 @@
 <script  setup lang="ts">
 import {onMounted, ref,nextTick,provide} from "vue"
 import { StarportCarrier } from "vue-starport";
-import Header from "./Layout/components/Header.vue";
-import Content from "./Layout/components/Content.vue";
-import Footer from "./Layout/components/Footer.vue";
-import { VaeStore } from './store'
+import Header from "@/Layout/components/Header.vue";
+import Content from "@/Layout/components/Content.vue";
+import Footer from "@/Layout/components/Footer.vue";
+import { VaeStore } from '@/store'
 import { useRouter } from 'vue-router'
 import {storeToRefs} from "pinia";
-import {darkTheme, useMessage} from 'naive-ui'
+import {darkTheme} from 'naive-ui'
 import { zhCN, dateZhCN } from 'naive-ui'
 const store = VaeStore();
 const scrollbarRef2 = ref<HTMLElement | undefined>(undefined);
 import { useDark, useToggle } from '@vueuse/core'
-import axios from 'axios';
 const showLoading=ref(false);
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
@@ -84,10 +83,6 @@ provide('scrollBy', scrollByTop)
 onMounted(() => {
   getWindowResize()
   window.addEventListener('resize', getWindowResize)
-  // 获取接口
-  axios.get("/api/").then(res => {
-    console.log('res', res)
-  })
 })
 // 获取屏幕尺寸
 const getWindowResize = function () {

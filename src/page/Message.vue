@@ -92,14 +92,14 @@
 </template>
 
 <script setup lang="ts">
-import BackgroundPlate from '../components/background/BackgroundPlate.vue'
+import BackgroundPlate from '@/components/background/BackgroundPlate.vue'
 import {HeartOutline} from '@vicons/ionicons5'
-import {VaeStore} from "../store";
+import {VaeStore} from "@/store";
 import { Starport } from "vue-starport";
 import {storeToRefs} from "pinia";
 import {inject} from "vue";
 const store = VaeStore();
-let {clientWidth,distanceToBottom,distanceToTop,isdarkTheme} = storeToRefs(store);
+let {clientWidth,isdarkTheme} = storeToRefs(store);
 //滚动条回到原位
 const scrollBy = inject<Function>('scrollBy');
 scrollBy? scrollBy(0):''

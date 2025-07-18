@@ -85,17 +85,16 @@
 </template>
 
 <script setup lang="ts">
-import {VaeStore} from "../store";
+import {VaeStore} from "@/store";
 import {storeToRefs} from "pinia";
 import {inject, onActivated, reactive, ref} from "vue";
 import {onBeforeRouteLeave, useRoute, useRouter} from "vue-router";
 import {useDialog, useMessage, useNotification,InputInst} from "naive-ui";
 const store = VaeStore();
-import { Bus } from '../utils/Bus';
+import { Bus } from '@/utils/Bus';
 import * as imageConversion from "image-conversion";
-import { FlowerSharp,CloseOutline,CaretForwardCircleOutline} from '@vicons/ionicons5';
 const message = useMessage()
-let {clientWidth,distanceToBottom,distanceToTop,userInfo,isdarkTheme} = storeToRefs(store);
+let {clientWidth,distanceToTop,userInfo} = storeToRefs(store);
 const notification = useNotification();
 const dialog = useDialog()
 const router = useRouter()

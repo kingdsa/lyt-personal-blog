@@ -69,17 +69,17 @@
 </template>
 
 <script setup lang="ts">
-import BackgroundPlate from '../components/background/BackgroundPlate.vue'
-import LinkCardBox from '../components/FriendLink/LinkCardBox.vue'
-import LinkCard from '../components/MyLinks/LinkCard.vue'
+import BackgroundPlate from '@/components/background/BackgroundPlate.vue'
+import LinkCardBox from '@/components/FriendLink/LinkCardBox.vue'
+import LinkCard from '@/components/MyLinks/LinkCard.vue'
 import {CheckmarkOutline,CloseOutline} from '@vicons/ionicons5'
-import {VaeStore} from "../store";
+import {VaeStore} from "@/store";
 import {storeToRefs} from "pinia";
 import {inject, onActivated, ref} from "vue";
 import {useMessage} from "naive-ui";
 import {onBeforeRouteLeave} from "vue-router";
 const store = VaeStore();
-let {clientWidth,distanceToBottom,distanceToTop,isdarkTheme} = storeToRefs(store);
+let {clientWidth,distanceToTop,isdarkTheme} = storeToRefs(store);
 const linkList=ref<any>([]);
 const loadingEnd=ref(false);
 const addlinkShowModal=ref(false);
