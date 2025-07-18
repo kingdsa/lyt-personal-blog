@@ -1,0 +1,1 @@
+export const kDebug = import.meta.env.DEV;
