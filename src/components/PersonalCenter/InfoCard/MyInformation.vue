@@ -6,19 +6,12 @@
           <n-avatar :size="58" :src="updateHeader" />
         </template>
         <template #header>
-          名称
-          <n-tag type="error"> 站长 </n-tag>
+          {{ userInfo.nickname }}
+          <n-tag type="error">{{ userInfo.role }}</n-tag>
         </template>
         <template #header-extra>
           <n-space justify="end">
-            <n-button
-              strong
-              secondary
-              @click="editShowModal = true"
-              type="info"
-            >
-              编辑信息
-            </n-button>
+            <n-button strong secondary @click="editShowModal = true" type="info">编辑信息</n-button>
             <n-button
               strong
               secondary
@@ -30,10 +23,10 @@
           </n-space>
         </template>
         <template #description>
-          <n-text depth="3"> 注册时间：{{ userInfo.createdAt }} </n-text>
+          <n-text depth="3">注册时间：{{ userInfo.createdAt }}</n-text>
         </template>
         这个人很简单，没什么好说的
-        <template #action> </template>
+        <template #action></template>
       </n-thing>
     </n-spin>
     <!--  编辑弹框-->
@@ -95,34 +88,22 @@
                   </n-grid-item>
                   <n-grid-item span="2 820:1 1025:1">
                     <n-form-item label="生日">
-                      <n-input
-                        v-model:value="editModel.userBirthday"
-                        placeholder="请输入生日"
-                      />
+                      <n-input v-model:value="editModel.userBirthday" placeholder="请输入生日" />
                     </n-form-item>
                   </n-grid-item>
                   <n-grid-item span="2 820:1 1025:1">
                     <n-form-item label="电话">
-                      <n-input
-                        v-model:value="editModel.userPhone"
-                        placeholder="请输入电话"
-                      />
+                      <n-input v-model:value="editModel.userPhone" placeholder="请输入电话" />
                     </n-form-item>
                   </n-grid-item>
                   <n-grid-item span="2 820:1 1025:1">
                     <n-form-item label="爱好">
-                      <n-input
-                        v-model:value="editModel.userHobby"
-                        placeholder="请输入爱好"
-                      />
+                      <n-input v-model:value="editModel.userHobby" placeholder="请输入爱好" />
                     </n-form-item>
                   </n-grid-item>
                   <n-grid-item span="2 820:1 1025:1">
                     <n-form-item label="地址">
-                      <n-input
-                        v-model:value="editModel.userAddress"
-                        placeholder="请输入地址"
-                      />
+                      <n-input v-model:value="editModel.userAddress" placeholder="请输入地址" />
                     </n-form-item>
                   </n-grid-item>
                   <n-grid-item span="2 820:1 1025:1">
@@ -141,18 +122,12 @@
                   </n-grid-item>
                   <n-grid-item span="2 820:1 1025:1">
                     <n-form-item label="微博">
-                      <n-input
-                        v-model:value="editModel.userWb"
-                        placeholder="请输入微博"
-                      />
+                      <n-input v-model:value="editModel.userWb" placeholder="请输入微博" />
                     </n-form-item>
                   </n-grid-item>
                   <n-grid-item span="2 820:1 1025:1">
                     <n-form-item label="微信">
-                      <n-input
-                        v-model:value="editModel.userWx"
-                        placeholder="请输入微信"
-                      />
+                      <n-input v-model:value="editModel.userWx" placeholder="请输入微信" />
                     </n-form-item>
                   </n-grid-item>
                   <n-grid-item span="2">
@@ -171,12 +146,9 @@
                   <n-grid-item span="2">
                     <n-space justify="center">
                       <n-form-item>
-                        <n-button @click="editShowModal = false">
-                          取消 </n-button
-                        >&nbsp;
-                        <n-button type="info" @click="saveInfo">
-                          保存
-                        </n-button>
+                        <n-button @click="editShowModal = false">取消</n-button>
+                        &nbsp;
+                        <n-button type="info" @click="saveInfo">保存</n-button>
                       </n-form-item>
                     </n-space>
                   </n-grid-item>
@@ -200,7 +172,7 @@
                   <n-button>上传头像</n-button>
                 </n-upload>
 
-                <n-button type="info" @click="saveHead"> 保存 </n-button>
+                <n-button type="info" @click="saveHead">保存</n-button>
               </n-space>
             </n-tab-pane>
             <n-tab-pane name="3" tab="修改密码">
@@ -226,10 +198,10 @@
                 </n-form-item-row>
                 <n-divider />
                 <n-space justify="center">
-                  <n-button @click="editShowModal = false"> 取消 </n-button
-                  >&nbsp;
+                  <n-button @click="editShowModal = false">取消</n-button>
+                  &nbsp;
 
-                  <n-button type="info" @click="savePwd"> 确定 </n-button>
+                  <n-button type="info" @click="savePwd">确定</n-button>
                 </n-space>
               </n-form>
             </n-tab-pane>
@@ -242,9 +214,10 @@
               />
               <n-divider />
               <n-space justify="center">
-                <n-button @click="editShowModal = false"> 取消 </n-button>&nbsp;
+                <n-button @click="editShowModal = false">取消</n-button>
+                &nbsp;
 
-                <n-button type="info" @click="saveUserName"> 确定 </n-button>
+                <n-button type="info" @click="saveUserName">确定</n-button>
               </n-space>
             </n-tab-pane>
           </n-tabs>
@@ -263,8 +236,7 @@ import { storeToRefs } from "pinia";
 import { onBeforeRouteLeave } from "vue-router";
 const message = useMessage();
 const store = VaeStore();
-let { clientWidth, distanceToTop, userInfo } =
-  storeToRefs(store);
+let { clientWidth, distanceToTop, userInfo } = storeToRefs(store);
 const editShowModal = ref(false);
 const userInfoLoading = ref(false);
 const editUserInfoLoading = ref(false);
