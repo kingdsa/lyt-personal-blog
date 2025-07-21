@@ -239,12 +239,12 @@ const getAccessRecord = async (page: number = 1, isLoadMore: boolean = false) =>
     });
 
     if (res.code === 200) {
-      const { data, total } = res.data;
+      const { list, total } = res.data;
       
       if (isLoadMore) {
-        pageData.value.push(...data);
+        pageData.value.push(...list);
       } else {
-        pageData.value = data;
+        pageData.value = list;
       }
       
       totalCount.value = total;

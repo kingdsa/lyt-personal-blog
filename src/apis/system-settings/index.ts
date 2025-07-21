@@ -10,7 +10,7 @@ const System_Settings_Api = {
   },
   /** 添加访问记录 */
   addAccessRecord() {
-    return request.post<ListDataTotalCount<any>>(`${System_Settings}/access-logs`);
+    return request.post<string>(`${System_Settings}/access-logs`);
   },
   /** 获取token */
   getToken(data: JwtPayload) {

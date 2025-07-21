@@ -6,7 +6,7 @@ declare global {
     data: T;
   }
   interface ListDataTotalCount<T = unknown> {
-    data: T[];
+    list: T[];
     total: number;
   }
 

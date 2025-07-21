@@ -20,27 +20,11 @@
           <!--     搜索条件-->
           <n-form label-placement="left">
             <n-space>
-              <n-form-item label="分类名称">
+              <n-form-item label="关键字">
                 <n-input
                   clearable
-                  v-model:value="queryData.labelName"
+                  v-model:value="queryData.keyword"
                   placeholder="请输入分类名称"
-                />
-              </n-form-item>
-              <n-form-item label="创建人">
-                <n-input
-                  clearable
-                  v-model:value="queryData.userName2"
-                  placeholder="请输入创建者用户名"
-                />
-              </n-form-item>
-
-              <n-form-item label="日期">
-                <n-date-picker
-                  clearable
-                  v-model:value="queryData.labelDate"
-                  type="date"
-                  format="yyy-MM-dd"
                 />
               </n-form-item>
               <n-form-item>
@@ -65,8 +49,8 @@
             <br />
             <n-pagination
               v-model:page="queryData.page"
-              v-model:page-size="queryData.limit"
-              :item-count="queryData.total"
+              v-model:page-size="queryData.pageSize"
+              :item-count="total"
               show-size-picker
               @update:page="pageChange"
               @update-page-size="pageSizeChange"
@@ -89,7 +73,7 @@
                 },
               ]"
             >
-              <template #suffix>共 {{ queryData.total }} 条</template>
+              <template #suffix>共 {{ total }} 条</template>
             </n-pagination>
           </n-spin>
         </n-card>
@@ -99,7 +83,7 @@
     <n-modal v-model:show="editShowModal">
       <n-card
         :style="{ width: clientWidth > 1025 ? '500px' : '96%' }"
-        :title="isupdate ? '正在编辑[' + updateName + ']分类' : '正在新增分类'"
+        :title="isUpdate ? '正在编辑[' + updateName + ']分类' : '正在新增分类'"
         :bordered="false"
         size="huge"
         role="dialog"
@@ -116,23 +100,61 @@
         </template>
         <n-spin :show="editLoading">
           <n-form label-width="80px" label-placement="left">
-            <n-form-item-row label="分类名称">
+            <n-form-item-row label="字典类型" required>
               <n-input
-                ref="labelNameRef"
-                v-model:value="updateForm.labelName"
-                placeholder="请输入分类名称。"
+                v-model:value="updateForm.type"
+                placeholder="请输入字典类型（1-50个字符）"
+                maxlength="50"
+                show-count
               />
             </n-form-item-row>
-            <n-form-item-row label="分类描述">
+            <n-form-item-row label="字典名称" required>
+              <n-input
+                ref="labelNameRef"
+                v-model:value="updateForm.name"
+                placeholder="请输入字典名称（1-100个字符）"
+                maxlength="100"
+                show-count
+              />
+            </n-form-item-row>
+            <n-form-item-row label="字典值">
+              <n-input
+                v-model:value="updateForm.value"
+                placeholder="请输入字典值（最多100个字符）"
+                maxlength="100"
+                show-count
+              />
+            </n-form-item-row>
+            <n-form-item-row label="描述">
               <n-input
                 ref="labelDescribeRef"
-                v-model:value="updateForm.labelDescribe"
-                placeholder="请输入分类描述。"
+                v-model:value="updateForm.description"
+                placeholder="请输入描述（最多255个字符）"
                 type="textarea"
+                maxlength="255"
+                show-count
                 :autosize="{
                   minRows: 2,
                   maxRows: 5,
                 }"
+              />
+            </n-form-item-row>
+            <n-form-item-row label="启用状态">
+              <n-switch
+                v-model:value="updateForm.isEnable"
+                :checked-value="true"
+                :unchecked-value="false"
+              >
+                <template #checked>启用</template>
+                <template #unchecked>禁用</template>
+              </n-switch>
+            </n-form-item-row>
+            <n-form-item-row label="排序">
+              <n-input-number
+                v-model:value="updateForm.sort"
+                placeholder="请输入排序数字"
+                :min="0"
+                :step="1"
               />
             </n-form-item-row>
           </n-form>
@@ -148,35 +170,38 @@
 </template>
 
 <script setup lang="ts">
-import { VaeStore } from "../../../store";
-import BackgroundPlate from "../../background/BackgroundPlate.vue";
+import { VaeStore } from "@/store";
+import BackgroundPlate from "@/components/background/BackgroundPlate.vue";
 import { storeToRefs } from "pinia";
-import { inject, onActivated, reactive, ref, h, watch, onBeforeUnmount } from "vue";
+import { inject, onActivated, reactive, ref, h } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
-import LinkCard from "../../MyLinks/LinkCard.vue";
 import { CloseOutline } from "@vicons/ionicons5";
-import { getChinese, formatDate } from "../../../utils/function";
-import { v4 as uuidv4 } from "uuid";
 
 import {
   NButton,
   useMessage,
   NGradientText,
   useDialog,
-  useNotification,
   InputInst,
 } from "naive-ui";
+import Dictionary_Api from '@/apis/dictionary';
+import { DictInputDTO, QueryDictionaryDto } from '@/apis/dictionary/types';
+import dayjs from 'dayjs';
 
 const tableShow = ref(false);
 const editLoading = ref(false);
 const editShowModal = ref(false);
-const isupdate = ref(false);
+const isUpdate = ref(false);
 const updateName = ref("");
+const total = ref(0);
 
 const updateForm = ref({
-  labelName: "",
-  labelDescribe: "",
-  labelId: "",
+  type: "",
+  name: "",
+  value: "",
+  description: "",
+  isEnable: true,
+  sort: 0,
 });
 const message = useMessage();
 
@@ -184,76 +209,55 @@ const labelNameRef = ref<InputInst | null>(null);
 
 const router = useRouter();
 const dialog = useDialog();
-const notification = useNotification();
 
-const queryData = reactive({
-  labelName: null,
-  labelDate: null,
-  userName2: null,
-  limit: 10,
-  total: 0,
+const queryData = reactive<QueryDictionaryDto>({
+  type: "",
+  keyword: "",
+  isEnable: true,
   page: 1,
+  pageSize: 10,
 });
 const store = VaeStore();
 let { clientWidth, distanceToBottom, distanceToTop, userInfo, isdarkTheme } = storeToRefs(store);
 
 //清空
 const emptyBtn = () => {
-  queryData.userName2 = null;
-  queryData.labelName = null;
-  queryData.labelDate = null;
+  queryData.keyword = "";
+  queryData.type = "";
+  queryData.isEnable = true;
+  queryData.page = 1;
+  queryData.pageSize = 10;
 };
 
 const pageChange = (page: number) => {
   queryData.page = page;
-  get_AadminLabelsAll();
+  get_AdminLabelsAll();
 };
 const pageSizeChange = (limit: number) => {
   queryData.page = limit;
   queryData.page = 1;
-  get_AadminLabelsAll();
+  get_AdminLabelsAll();
 };
 
 const columns = [
   {
-    title: "序号",
-    width: "60",
-    render(row: any, rowIndex: number) {
-      return rowIndex + 1;
-    },
-  },
-  {
     title: "分类名称",
     ellipsis: true,
     width: "170",
-    key: "labelName",
+    key: "name",
   },
   {
-    title: "创建人",
-    width: "70",
+    title: "描述",
     ellipsis: true,
-    render(row: any) {
-      let { qq, qqName, userName } = row;
-      return h(
-        NGradientText,
-        {
-          type: qq == 0 ? "info" : "error",
-        },
-        {
-          default: () => (qq == 0 ? userName : qqName),
-        }
-      );
-    },
-  },
-  {
-    title: "分类描述",
-    ellipsis: true,
-    key: "labelDescribe",
+    key: "description",
   },
   {
     title: "创建时间",
     width: "180",
-    key: "labelDate",
+    key: "createdAt",
+    render(row: DictInputDTO) {
+      return dayjs(row.createdAt).format("YYYY-MM-DD HH:mm:ss");
+    },
   },
 
   {
@@ -300,56 +304,105 @@ const tableData = ref<any>([]);
 //查询
 const searchBtn = () => {
   queryData.page = 1;
-  get_AadminLabelsAll();
+  get_AdminLabelsAll();
 };
 //获取所有
-const get_AadminLabelsAll = () => {
+const get_AdminLabelsAll = async () => {
   tableShow.value = true;
-  tableData.value = [{ labelName: "分类", labelDescribe: "分类描述" }];
-  queryData.total = 100;
-  setTimeout(() => {
-    tableShow.value = false;
-  }, 1000);
+  const copyData = JSON.parse(JSON.stringify(queryData));
+  Object.keys(copyData).forEach(key => {
+    if (copyData[key] === null || copyData[key] === undefined || copyData[key] === '') {
+      delete copyData[key];
+    }
+  });
+  const res = await Dictionary_Api.getDictionary(copyData);
+  if (res.code === 200) {
+    tableData.value = res.data.list;
+    total.value = res.data.total;
+  } else {
+    message.error(res.msg);
+  }
+  tableShow.value = false;
+  // tableData.value = [{ labelName: "分类", labelDescribe: "分类描述" }];
+  // queryData.total = 100;
+  // setTimeout(() => {
+  //   tableShow.value = false;
+  // }, 1000);
 };
-get_AadminLabelsAll();
+get_AdminLabelsAll();
 
 //新增
 const addBtn = () => {
-  updateForm.value.labelDescribe = "";
-  updateForm.value.labelName = "";
-  updateForm.value.labelId = uuidv4();
+  updateForm.value.type = "";
+  updateForm.value.name = "";
+  updateForm.value.value = "";
+  updateForm.value.description = "";
+  updateForm.value.isEnable = true;
+  updateForm.value.sort = 0;
   editShowModal.value = true;
-  isupdate.value = false;
+  isUpdate.value = false;
 };
 //编辑
 const editBtn = (row: any) => {
   updateName.value = row.labelName;
   updateForm.value = { ...row };
   editShowModal.value = true;
-  isupdate.value = true;
+  isUpdate.value = true;
 };
 //确认
 const submitBtn = () => {
-  let { labelName } = updateForm.value;
-  if (!labelName) {
-    message.error("请输入分类名称");
+  let { type, name } = updateForm.value;
+  
+  // 验证字典类型
+  if (!type || type.trim() === '') {
+    message.error("字典类型不能为空");
+    return;
+  }
+  if (type.length > 50) {
+    message.error("字典类型长度应在1-50个字符之间");
+    return;
+  }
+  
+  // 验证字典名称
+  if (!name || name.trim() === '') {
+    message.error("字典名称不能为空");
     labelNameRef.value?.focus();
     return;
   }
+  if (name.length > 100) {
+    message.error("字典名称长度应在1-100个字符之间");
+    return;
+  }
+  
+  // 验证字典值（可选）
+  if (updateForm.value.value && updateForm.value.value.length > 100) {
+    message.error("字典值长度不能超过100个字符");
+    return;
+  }
+  
+  // 验证描述（可选）
+  if (updateForm.value.description && updateForm.value.description.length > 255) {
+    message.error("描述长度不能超过255个字符");
+    return;
+  }
+  
   message.info("参数:" + JSON.stringify(updateForm.value));
 
-  //判断新增还是编辑
-  if (isupdate.value) {
-    update_AadminLabels();
-  } else {
-    add_AadminLabels();
-  }
+  handleSubmit();
 };
-const update_AadminLabels = () => {
-  console.log(updateForm.value);
-};
-const add_AadminLabels = () => {
-  console.log(updateForm.value);
+const handleSubmit = () => {
+  editLoading.value = true;
+  Dictionary_Api.createDictionary(updateForm.value).then(res => {
+    if (res.code === 200) {
+      message.success("新增成功");
+      editShowModal.value = false;
+      get_AdminLabelsAll();
+    } else {
+      message.error(res.msg);
+    }
+  }).finally(() => {
+    editLoading.value = false;
+  })
 };
 
 //删除
