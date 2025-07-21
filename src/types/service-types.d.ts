@@ -11,8 +11,8 @@ declare global {
   }
 
   interface PageParams {
-    pageIndex: number;
-    pageSize: number;
+    page: number;
+    limit: number;
   }
 }
 export {};

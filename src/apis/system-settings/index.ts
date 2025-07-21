@@ -1,10 +1,10 @@
 import request from "@/utils/axios";
-import { JwtPayload, TokenResult } from './types';
+import { JwtPayload, TokenResult, AccessRecordInputDTO, AccessLogItem } from './types';
 const System_Settings = "/system";
 const System_Settings_Api = {
   /** 获取访问记录 */
-  getAccessRecord(params: PageParams) {
-    return request.get<ListDataTotalCount<any>>(`${System_Settings}/access-logs`, {
+  getAccessRecord(params: AccessRecordInputDTO) {
+    return request.get<ListDataTotalCount<AccessLogItem>>(`${System_Settings}/access-logs`, {
       params
     });
   },
