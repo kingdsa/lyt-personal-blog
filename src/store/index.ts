@@ -13,17 +13,15 @@ export const VaeStore = defineStore(Names.StoreName, {
       activeKey: "", //当前页面
       address: "未知", //当前用户地址
       accessToken: localStorage.getItem("accessToken") || "", //token
-      userInfo: localStorage.getItem("userInfo")
-        ? JSON.parse(localStorage.getItem("userInfo") || "")
-        : {
-            username: "",
-            email: "",
-            nickname: "",
-            avatar: "",
-            role: "",
-            isActive: false,
-            lastLoginAt: new Date(),
-          },
+      userInfo: {
+        username: "",
+        email: "",
+        nickname: "",
+        avatar: "",
+        role: "user",
+        isActive: false,
+        lastLoginAt: new Date(),
+      } as User,
     };
   },
   //类似computed 修饰一些值
@@ -63,5 +61,17 @@ export const VaeStore = defineStore(Names.StoreName, {
     setToken(token: string) {
       this.accessToken = token;
     },
+  },
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        // 自定义存储的 key，默认是 store.$id
+        key: "userInfo",
+        // 可以指定任何 extends Storage 的实例，默认是 sessionStorage
+        storage: localStorage,
+        // state 中的字段名，按组打包储存
+      },
+    ],
   },
 });

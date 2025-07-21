@@ -11,17 +11,10 @@ export interface MessageData {
   user: {
     username: string
     avatar: string
-    level: number
+    level?: number
     homeLink?: string
   }
   replies?: MessageData[]
-}
-
-export interface UserInfo {
-  userId?: string
-  userName?: string
-  userHead?: string
-  level?: number
 }
 
 // 留言板模拟数据
@@ -299,28 +292,27 @@ export const getCurrentUserAddress = (): string => {
 }
 
 // 工具函数：创建新留言对象
-export const createNewMessage = (content: string, images: string[] = [], user: UserInfo): MessageData => {
+export const createNewMessage = (content: string, images: string[] = [], user: User): MessageData => {
   return {
     id: generateId(),
     parentId: null,
-    uid: user.userId || 'anonymous',
+    uid: user.id || 'anonymous',
     address: getCurrentUserAddress(),
     content: content,
     likes: 0,
     contentImg: images.length > 0 ? images.join(', ') : '',
     createTime: '刚刚',
     user: {
-      username: user.userName || '匿名用户',
-      avatar: user.userHead || 'https://07akioni.oss-cn-beijing.aliyuncs.com/demo1.JPG',
-      level: user.level || 1,
-      homeLink: `/user/${user.userId}`
+      username: user.username || '匿名用户',
+      avatar: user.avatar!,
+      homeLink: `/user/${user.id}`
     },
     replies: []
   }
 }
 
 // 工具函数：创建新回复对象
-export const createNewReply = (content: string, parentId: string, user: UserInfo, replyToUser?: string): MessageData => {
+export const createNewReply = (content: string, parentId: string, user: User, replyToUser?: string): MessageData => {
   const replyContent = replyToUser 
     ? `回复 <span style="color: var(--n-color-primary);">@${replyToUser}:</span> ${content}`
     : content
@@ -328,16 +320,15 @@ export const createNewReply = (content: string, parentId: string, user: UserInfo
   return {
     id: generateId(),
     parentId: parentId,
-    uid: user.userId || 'anonymous',
+    uid: user.id || 'anonymous',
     address: getCurrentUserAddress(),
     content: replyContent,
     likes: 0,
     createTime: '刚刚',
     user: {
-      username: user.userName || '匿名用户',
-      avatar: user.userHead || 'https://07akioni.oss-cn-beijing.aliyuncs.com/demo1.JPG',
-      level: user.level || 1,
-      homeLink: `/user/${user.userId}`
+      username: user.username || '匿名用户',
+      avatar: user.avatar!,
+      homeLink: `/user/${user.id}`
     }
   }
 }

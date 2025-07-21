@@ -67,7 +67,7 @@
             v-for="message in displayMessages"
             :key="message.id"
             :message-data="message"
-            :current-user-id="currentUser?.userId"
+            :current-user-id="currentUser?.id"
             @like="handleLike"
             @reply="handleReply"
             @delete="handleDelete"
@@ -133,9 +133,7 @@ import {
   guestbookMessages, 
   createNewMessage, 
   createNewReply,
-  formatTime,
   type MessageData,
-  type UserInfo
 } from '@/assets/guestbook-data'
 
 const store = VaeStore()
@@ -213,7 +211,7 @@ const hasMore = computed(() => {
 
 // 事件处理函数
 const handleNewMessage = async (content: string, images?: string[]) => {
-  if (!currentUser.value?.userId) {
+  if (!currentUser.value?.id) {
     message.warning('请先登录后再发表留言')
     return
   }
@@ -233,7 +231,7 @@ const handleNewMessage = async (content: string, images?: string[]) => {
 }
 
 const handleReply = (parentId: string, content: string, replyToUser?: string) => {
-  if (!currentUser.value?.userId) {
+  if (!currentUser.value?.id) {
     message.warning('请先登录后再回复')
     return
   }
@@ -266,7 +264,7 @@ const handleLike = (messageId: string) => {
 }
 
 const handleDelete = (messageId: string) => {
-  if (!currentUser.value?.userId) {
+  if (!currentUser.value?.id) {
     message.warning('请先登录')
     return
   }
@@ -275,7 +273,7 @@ const handleDelete = (messageId: string) => {
   const messageIndex = messages.value.findIndex(msg => msg.id === messageId)
   if (messageIndex > -1) {
     const targetMessage = messages.value[messageIndex]
-    if (targetMessage.uid === currentUser.value.userId) {
+    if (targetMessage.uid === currentUser.value.id) {
       messages.value.splice(messageIndex, 1)
       message.success('留言已删除')
     } else {

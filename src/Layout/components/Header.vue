@@ -88,8 +88,7 @@ const handleSelect = (key: string) => {
       positiveText: "确定",
       negativeText: "不确定",
       onPositiveClick: () => {
-        removeCookies("accessToken");
-        removeCookies("userInfo");
+        store.setUserInfo({} as User);
         store.setToken("");
         location.reload();
       },

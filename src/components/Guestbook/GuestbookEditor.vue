@@ -7,7 +7,7 @@
     <template #header>
       <n-space align="center">
         <n-avatar 
-          :src="userInfo.userHead" 
+          :src="userInfo.avatar!" 
           round 
           size="small"
         />

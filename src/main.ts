@@ -5,6 +5,7 @@ import App from './App.vue'
 import router from './router'
 //注册pinia
 import {createPinia} from 'pinia'
+import piniaPluginPersist from 'pinia-plugin-persist'
 //背景动画
 import Particles from "@tsparticles/vue3";
 // @ts-ignore
@@ -20,7 +21,8 @@ import { MotionPlugin } from '@vueuse/motion'
 import UUID from 'vue3-uuid'
 import UndrawUi from 'undraw-ui'
 import 'undraw-ui/dist/style.css'
-const store=createPinia()
+const store = createPinia()
+store.use(piniaPluginPersist)
 import { VaeStore } from './store'
 
 //路由前置守卫

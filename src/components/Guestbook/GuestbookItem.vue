@@ -18,15 +18,6 @@
       <template #header>
         <div class="user-info">
           <n-text strong>{{ messageData.user.username }}</n-text>
-          <n-tag 
-            v-if="messageData.user.level >= 5" 
-            size="small" 
-            type="error" 
-            :bordered="false"
-            style="margin-left: 8px;"
-          >
-            {{ messageData.user.level >= 6 ? '站长' : 'VIP' }}
-          </n-tag>
         </div>
       </template>
       
@@ -211,7 +202,7 @@ interface MessageData {
   user: {
     username: string
     avatar: string
-    level: number
+    level?: number
     homeLink?: string
   }
   replies?: MessageData[]
