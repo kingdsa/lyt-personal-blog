@@ -30,7 +30,7 @@
           </n-space>
         </template>
         <template #description>
-          <n-text depth="3"> 注册时间：2024-01-08 </n-text>
+          <n-text depth="3"> 注册时间：{{ userInfo.createdAt }} </n-text>
         </template>
         这个人很简单，没什么好说的
         <template #action> </template>

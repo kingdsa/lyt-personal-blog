@@ -141,6 +141,7 @@ import { ref, computed, reactive } from "vue";
 import { storeToRefs } from "pinia";
 import { useMessage, InputInst } from "naive-ui";
 import User_Api from '@/apis/user';
+import dayjs from 'dayjs';
 const emit = defineEmits(["setShowModal"]);
 const store = VaeStore();
 let { clientWidth } = storeToRefs(store);
@@ -196,6 +197,7 @@ const login_Request = (username: string, password: string) => {
     console.log(res);
     if (res.code === 200) {
       message.success("登录成功！");
+      res.data.user.createdAt = dayjs(res.data.user.createdAt).format("YYYY-MM-DD");
       store.setUserInfo(res.data.user);
       store.setToken(res.data.token);
     } else {

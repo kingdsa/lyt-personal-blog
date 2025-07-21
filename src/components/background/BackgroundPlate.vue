@@ -2,11 +2,7 @@
   <!--  通用背景模板-->
 
   <div
-    style="
-      position: relative;
-      user-select: none;
-      box-shadow: 0 -1px 100px rgba(218, 216, 216, 0.5);
-    "
+    style="position: relative; user-select: none; box-shadow: 0 -1px 100px rgba(218, 216, 216, 0.5)"
     class="zwc-content-center"
     :style="{
       height: height ? height : clientWidth > 1025 ? '350px' : '200px',
@@ -40,17 +36,11 @@
 
 <script setup lang="ts">
 //这些都可以尝试一下
-import {
-  lizhi,
-  dakeli,
-  wucaizhixie,
-  xuehua,
-  zhezhao,
-} from "../../utils/particlesFiles";
+import { lizhi } from "@/utils/particlesFiles";
 import { Container } from "@tsparticles/engine";
 
 import { onActivated, ref } from "vue";
-import { VaeStore } from "../../store";
+import { VaeStore } from "@/store";
 import { storeToRefs } from "pinia";
 const particlesLoaded = async (container: Container) => {
   console.log(container);

@@ -2,15 +2,15 @@ declare global {
   // 接口响应数据
   interface User {
     id?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: string;
+    updatedAt?: string;
     username?: string;
     email?: string;
     nickname?: string;
     avatar?: string;
     role?: 'admin' | 'user';
     isActive?: boolean;
-    lastLoginAt?: Date;
+    lastLoginAt?: string;
     password?: string;
   }
 }
