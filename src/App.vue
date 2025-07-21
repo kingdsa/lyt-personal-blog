@@ -70,6 +70,17 @@ const scroll=(e:any)=> {
   })
 
 }
+const onGetToken = async () => {
+  const res = await System_Settings_Api.getToken({
+    sub: '123456789'
+  })
+  if (res.code === 200) {
+    // 添加访客记录
+    onAddAccessRecord()
+    // 设置token
+    localStorage.setItem('accessToken', res.data.accessToken)
+  }
+}
 
 const onAddAccessRecord = () => {
   System_Settings_Api.addAccessRecord()
@@ -87,8 +98,9 @@ provide('scrollBy', scrollByTop)
 onMounted(() => {
   getWindowResize()
   window.addEventListener('resize', getWindowResize)
-  // 添加访客记录
-  onAddAccessRecord()
+  // 获取token
+  onGetToken()
+
 })
 // 获取屏幕尺寸
 const getWindowResize = function () {
