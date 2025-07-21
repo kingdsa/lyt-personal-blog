@@ -14,9 +14,6 @@
       <n-card :embedded="isdarkTheme" :bordered="!isdarkTheme">
         <n-thing>
           <template #avatar>
-            <!--            这个动画效果如何使用。
-                请访问作者文档：https://github.com/antfu/vue-starport/blob/main/README.zh-Hans.md
--->
             <Starport
               port="my-id"
               style="width: 100px; height: 100px; background: none"
@@ -25,27 +22,16 @@
             </Starport>
           </template>
           <template #header>
-            <n-text tag="div"> Zhang Apple </n-text>
+            <n-text tag="div"> 刘阳涛 </n-text>
           </template>
 
           <template #description>
             目前工作：前端开发🎗<br />
-            联系邮箱：zhang20209373@163.com<br />
+            联系邮箱：310485385@qq.com<br />
             这个人很简单，没什么好说的。
           </template>
           <template #header-extra>
             <n-space>
-              <n-popover trigger="click">
-                <template #trigger>
-                  <n-button size="small" type="info" strong secondary
-                    >我的公众号</n-button
-                  >
-                </template>
-                <n-image
-                  width="100"
-                  src="https://img.zhangpingguo.com/VAE_Article_Head/vae/cddfa4c5-c160-48b1.jpg"
-                />
-              </n-popover>
               <n-popover trigger="click">
                 <template #trigger>
                   <n-button size="small" type="success" strong secondary
@@ -54,7 +40,7 @@
                 </template>
                 <n-image
                   width="100"
-                  src="https://img.zhangpingguo.com/VAE_Article_Head/vae/b80bf73e-068d-49f1.jpg"
+                  src="https://lyt-oss-web.oss-cn-beijing.aliyuncs.com/lyt-wx.JPG"
                 />
               </n-popover>
             </n-space>
@@ -78,10 +64,10 @@
         </template>
         <n-h5 class="margin-bottom-top"
           >前端：<n-gradient-text type="error"
-            >Vue3+Vite+Ts+NaiveUI， </n-gradient-text
-          >后端：<n-gradient-text type="info">Java</n-gradient-text
+            >Vue3.5+Vite7+Ts+NaiveUI2.42， </n-gradient-text
+          >后端：<n-gradient-text type="info">Nest.js</n-gradient-text
           >，数据库：<n-gradient-text type="info">MySQL</n-gradient-text
-          >；腾讯云服务器。</n-h5
+          >；前端部署：cloudflare；后端部署：render。</n-h5
         >
         <n-h5 class="margin-bottom-top"
           >本站的编写纯属个人兴趣爱好，前后端均独立完成；主要用来记录自己工作、生活、学习上的笔记。</n-h5
@@ -105,9 +91,9 @@
         </template>
         <n-card embedded :bordered="false">
           本站前端代码已发布到码云：：<n-a
-            href="https://gitee.com/shcmyg/zhang-apple-blog"
+            href="https://github.com/kingdsa/lyt-personal-blog"
             target="_blank"
-            >https://gitee.com/shcmyg/zhang-apple-blog</n-a
+            >https://github.com/kingdsa/lyt-personal-blog</n-a
           >。需要的可前往下载。<br />
           如果您觉得本站还不错，可以通过点击右上角的赞赏按钮来支持本站，🧣感谢您的支持！
         </n-card>
