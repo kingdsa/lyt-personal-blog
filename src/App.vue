@@ -71,6 +71,9 @@ const scroll=(e:any)=> {
 
 }
 const onGetToken = async () => {
+  if (localStorage.getItem('accessToken')) {
+    return
+  }
   const res = await System_Settings_Api.getToken({
     sub: '123456789'
   })
