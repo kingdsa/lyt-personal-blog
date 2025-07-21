@@ -97,7 +97,7 @@ const store = VaeStore();
 let { isdarkTheme, distanceToTop } = storeToRefs(store);
 //切换主题，白天黑夜
 const setDarkTheme = () => {
-  store.setdarkTheme(!isdarkTheme.value);
+  store.setDarkTheme(!isdarkTheme.value);
   toggleDark();
 };
 

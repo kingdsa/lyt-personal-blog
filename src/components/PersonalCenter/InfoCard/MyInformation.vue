@@ -406,7 +406,7 @@ const get_MyUserInfo = () => {
   //请求成功后将信息保存至store，cookie
   // userForm.value =
   // editModel.value = ;
-  // store.setuserInfo({...userInfo.value})
+  // store.setUserInfo({...userInfo.value})
   // setCookies('userInfo',JSON.stringify({...userInfo.value}));
 
 }

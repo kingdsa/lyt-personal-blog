@@ -28,9 +28,9 @@ router.beforeEach((to,from,next)=>{
     //设置网页标题
     document.title=to.meta.title as string;
     //导航菜单选中
-    VaeStore().setactiveKey(to.name as string);
+    VaeStore().setActiveKey(to.name as string);
     //访问指定路由，判断是否登录，未登录则跳转首页
-    if(!getCookie('appleToken')){
+    if(!localStorage.getItem('accessToken')){
         if( ['personalCenter', 'myArticle',  'articleEditor',].includes(to.name as string)){
             next('/home');
         }

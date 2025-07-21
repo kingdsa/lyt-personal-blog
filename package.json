@@ -19,6 +19,7 @@
     "md-editor-v3": "^5.8.1",
     "mitt": "^3.0.1",
     "pinia": "^3.0.3",
+    "pinia-plugin-persist": "^1.0.0",
     "qs": "^6.14.0",
     "sass": "^1.89.2",
     "tsparticles": "^3.8.1",

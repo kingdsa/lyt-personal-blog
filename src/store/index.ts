@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { Names } from "./store-name";
-import { getCookie } from "@/utils/auth";
 
 export const VaeStore = defineStore(Names.StoreName, {
   state: () => {
@@ -13,19 +12,17 @@ export const VaeStore = defineStore(Names.StoreName, {
       distanceToTop: 0, //滚动条距离上部
       activeKey: "", //当前页面
       address: "未知", //当前用户地址
-      appleToken: getCookie("appleToken") || "", //token
-      userInfo: getCookie("userInfo")
-        ? JSON.parse(getCookie("userInfo"))
+      accessToken: localStorage.getItem("accessToken") || "", //token
+      userInfo: localStorage.getItem("userInfo")
+        ? JSON.parse(localStorage.getItem("userInfo") || "")
         : {
-            token: "",
-            userHead: "",
-            userId: "",
-            userName: "",
-            userPassword: "",
-            userPowerId: "",
-            qqId: "",
-            qqName: "",
-            qqImg: "",
+            username: "",
+            email: "",
+            nickname: "",
+            avatar: "",
+            role: "",
+            isActive: false,
+            lastLoginAt: new Date(),
           },
     };
   },
@@ -53,17 +50,18 @@ export const VaeStore = defineStore(Names.StoreName, {
     setclientHeight(num: number) {
       this.clientHeight = num;
     },
-    setactiveKey(key: string) {
+    setActiveKey(key: string) {
       this.activeKey = key;
     },
-    setdarkTheme(darkTheme: boolean) {
+    setDarkTheme(darkTheme: boolean) {
       this.isdarkTheme = darkTheme;
     },
-    setuserInfo(obj: any) {
+    setUserInfo(obj: User) {
+      localStorage.setItem("userInfo", JSON.stringify(obj));
       this.userInfo = obj;
     },
-    setappleToken(token: string) {
-      this.appleToken = token;
+    setToken(token: string) {
+      this.accessToken = token;
     },
   },
 });

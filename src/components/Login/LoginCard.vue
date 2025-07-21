@@ -139,7 +139,6 @@
 import { VaeStore } from "../../store";
 import { ref, computed, reactive } from "vue";
 import { storeToRefs } from "pinia";
-import { setCookies } from "../../utils/auth";
 import { useMessage, InputInst } from "naive-ui";
 import User_Api from '@/apis/user';
 const emit = defineEmits(["setShowModal"]);
@@ -193,7 +192,18 @@ const loginBtn = () => {
 //登录接口
 const login_Request = (username: string, password: string) => {
   showLoading.value = true;
-  
+  User_Api.login({ username, password }).then(res => {
+    console.log(res);
+    if (res.code === 200) {
+      message.success("登录成功！");
+      store.setUserInfo(res.data.user);
+      store.setToken(res.data.token);
+    } else {
+      message.error(res.msg);
+    }
+  }).finally(() => {
+    showLoading.value = false;
+  })
   //关闭弹框，刷新页面
   emit("setShowModal");
   // location.reload();

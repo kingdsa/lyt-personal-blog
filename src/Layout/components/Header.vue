@@ -9,7 +9,7 @@
       @update:value="handleUpdateValue"
     />
     <n-button
-      v-if="!appleToken"
+      v-if="!userInfo.id"
       class="login-style"
       strong
       secondary
@@ -22,12 +22,14 @@
       :options="options"
       @select="handleSelect"
     >
-      <n-avatar
-        class="login-style"
-        round
-        size="medium"
-        :src="!userInfo.qqId ? userInfo.userHead : userInfo.qqImg"
-      />
+      <div class="login-style">
+        <n-avatar
+          round
+          size="medium"
+          :src="userInfo.avatar"
+        />
+        <span>{{ userInfo.nickname }}</span>
+      </div>
     </n-dropdown>
   </n-layout-header>
   <!--  登录注册弹框-->
@@ -59,7 +61,7 @@ import {
 } from "@vicons/ionicons5";
 //解构
 const store = VaeStore();
-let { isPC, clientWidth, activeKey, appleToken, userInfo } = storeToRefs(store);
+let { isPC, clientWidth, activeKey, userInfo } = storeToRefs(store);
 const showModal = ref(false);
 const dialog = useDialog();
 function renderIcon(icon: Component) {
@@ -86,9 +88,9 @@ const handleSelect = (key: string) => {
       positiveText: "确定",
       negativeText: "不确定",
       onPositiveClick: () => {
-        removeCookies("appleToken");
+        removeCookies("accessToken");
         removeCookies("userInfo");
-        store.setappleToken("");
+        store.setToken("");
         location.reload();
       },
     });
@@ -97,7 +99,7 @@ const handleSelect = (key: string) => {
   }
 };
 //这里是导航菜单栏
-const meunList = [
+const menuList = [
   {
     label: "首页",
     key: "home",
@@ -142,13 +144,13 @@ watch(
   clientWidth,
   (oldisPC, newisPC) => {
     if (clientWidth.value > 1025) {
-      menuOptions = [...meunList];
+      menuOptions = [...menuList];
     } else {
       menuOptions = [
         {
           label: renderIcon(MenuIcon),
           key: "dance-dance-dance",
-          children: [...meunList],
+          children: [...menuList],
         },
       ];
     }
@@ -172,5 +174,8 @@ const handleUpdateValue = (key: string, item: MenuOption) => {
   position: absolute;
   top: 16px;
   right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 </style>
