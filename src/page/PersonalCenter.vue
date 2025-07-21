@@ -22,16 +22,16 @@ let {clientWidth,distanceToTop,isdarkTheme} = storeToRefs(store);
 
 //滚动条回到原位
 const scrollBy = inject<Function>('scrollBy');
-const remeberScroll=ref(0);
+const rememberScroll=ref(0);
 // 跳转路由守卫
 onBeforeRouteLeave((to, from, next) => {
   // 将当前位置进行一个状态保存
-  remeberScroll.value = distanceToTop.value;
+  rememberScroll.value = distanceToTop.value;
   next()
 })
 //   组件激活
 onActivated(() => {
-  scrollBy? scrollBy(remeberScroll.value):''
+  scrollBy? scrollBy(rememberScroll.value):''
 })
 
 </script>

@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineComponent, h, ref, computed, reactive,shallowRef} from 'vue'
+import {computed} from 'vue'
 import MyInformation from './InfoCard/MyInformation.vue'
 import { NIcon } from 'naive-ui'
 import {
@@ -41,7 +41,7 @@ import {
   ChatbubbleEllipsesOutline,
   PeopleOutline, HomeOutline,
 } from '@vicons/ionicons5';
-import {VaeStore} from "../../store";
+import {VaeStore} from "@/store";
 import {storeToRefs} from "pinia";
 const store = VaeStore();
 let {userInfo} = storeToRefs(store);
