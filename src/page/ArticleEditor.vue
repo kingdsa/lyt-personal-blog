@@ -320,13 +320,11 @@ const onUploadImg = async (files: FileList, callback: (urls: string[]) => void) 
 const add_Article=()=>{
   if(route.params.id!='add'){
 
-message.info('参数：'+JSON.stringify(articleForm))
     //如果是编辑则走后端编辑方法
     console.log(articleForm)
   }else{
     //如果是新增则走后端新增方法
     console.log(articleForm)
-    message.info('参数：'+JSON.stringify(articleForm))
 
   }
 

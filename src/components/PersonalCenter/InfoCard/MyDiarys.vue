@@ -310,8 +310,6 @@ const savediarys=()=>{
 const add_Diarys=()=>{
   diarysLoading.value=true;
     //调用新增方法
-  console.log(diaryContent.value)
-  message.info('参数:'+diaryContent.value)
   setTimeout(()=>{
     diarysLoading.value=false;
 
@@ -320,8 +318,6 @@ const add_Diarys=()=>{
 const upd_Diarys=()=>{
   diarysLoading.value=true;
   //调用编辑方法
-  message.info('参数:'+diaryContent.value)
-  console.log(diaryContent.value)
   setTimeout(()=>{
     diarysLoading.value=false;
 
@@ -336,8 +332,6 @@ const deleteBtn=(row:any)=>{
     positiveText: '确定',
     negativeText: '不确定',
     onPositiveClick: () => {
-      message.info('参数：'+JSON.stringify(row))
-
       //执行删除方法
       console.log(row)
   }})

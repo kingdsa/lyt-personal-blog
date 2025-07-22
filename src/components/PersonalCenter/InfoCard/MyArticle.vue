@@ -357,8 +357,6 @@ const deleteBtn = (row: any) => {
     positiveText: "确定",
     negativeText: "不确定",
     onPositiveClick: () => {
-      message.info("参数：" + JSON.stringify(row));
-
       // 删除方法
       console.log(row);
     },
@@ -371,8 +369,6 @@ const statusBtn = (row: any) => {
     positiveText: "确定",
     negativeText: "不确定",
     onPositiveClick: () => {
-      message.info("参数：" + JSON.stringify(row));
-
       //调用后台接口
       console.log(row);
     },

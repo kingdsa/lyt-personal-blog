@@ -30,8 +30,6 @@
               <n-form-item>
                 <n-button type="info" @click="searchBtn">查询</n-button>
                 &nbsp;
-                <n-button @click="emptyBtn">清空</n-button>
-                &nbsp;
                 <n-button type="success" @click="addBtn">新增</n-button>
               </n-form-item>
             </n-space>
@@ -192,10 +190,11 @@ const tableShow = ref(false);
 const editLoading = ref(false);
 const editShowModal = ref(false);
 const isUpdate = ref(false);
+const deleteLoading = ref(false);
 const updateName = ref("");
 const total = ref(0);
 
-const updateForm = ref({
+const updateForm = ref<DictInputDTO>({
   type: "",
   name: "",
   value: "",
@@ -300,7 +299,7 @@ const columns = [
   },
 ];
 
-const tableData = ref<any>([]);
+const tableData = ref<DictInputDTO[]>([]);
 //查询
 const searchBtn = () => {
   queryData.page = 1;
@@ -323,11 +322,6 @@ const get_AdminLabelsAll = async () => {
     message.error(res.msg);
   }
   tableShow.value = false;
-  // tableData.value = [{ labelName: "分类", labelDescribe: "分类描述" }];
-  // queryData.total = 100;
-  // setTimeout(() => {
-  //   tableShow.value = false;
-  // }, 1000);
 };
 get_AdminLabelsAll();
 
@@ -343,8 +337,8 @@ const addBtn = () => {
   isUpdate.value = false;
 };
 //编辑
-const editBtn = (row: any) => {
-  updateName.value = row.labelName;
+const editBtn = (row: DictInputDTO) => {
+  updateName.value = row.name;
   updateForm.value = { ...row };
   editShowModal.value = true;
   isUpdate.value = true;
@@ -386,15 +380,18 @@ const submitBtn = () => {
     return;
   }
   
-  message.info("参数:" + JSON.stringify(updateForm.value));
-
   handleSubmit();
 };
 const handleSubmit = () => {
   editLoading.value = true;
-  Dictionary_Api.createDictionary(updateForm.value).then(res => {
+  const fun = isUpdate.value ? Dictionary_Api.updateDictionary : Dictionary_Api.createDictionary;
+  const copyData = JSON.parse(JSON.stringify(updateForm.value));
+  delete copyData.createdAt;
+  delete copyData.updatedAt;
+  delete copyData.deletedAt;
+  fun(copyData).then(res => {
     if (res.code === 200) {
-      message.success("新增成功");
+      message.success(isUpdate.value ? "编辑成功" : "新增成功");
       editShowModal.value = false;
       get_AdminLabelsAll();
     } else {
@@ -406,33 +403,44 @@ const handleSubmit = () => {
 };
 
 //删除
-const deleteBtn = (row: any) => {
-  let { labelName, labelId } = row;
+const deleteBtn = (row: DictInputDTO) => {
+  let { name, id } = row;
   dialog.error({
     title: `删除分类`,
-    content: `是否删除[${labelName}]分类？`,
+    content: `是否删除[${name}]分类？`,
     positiveText: "确定",
-    negativeText: "不确定",
+    negativeText: "取消",
+    loading: deleteLoading.value,
     onPositiveClick: () => {
-      message.info("参数:" + JSON.stringify(row));
-
-      //执行删除方法
+      deleteLoading.value = true;
+      Dictionary_Api.deleteDictionary(id!).then(res => {
+        if (res.code === 200) {
+          message.success("删除成功");
+          get_AdminLabelsAll();
+          return true;
+        } else {
+          message.error(res.msg);
+        }
+      }).finally(() => {
+        deleteLoading.value = false;
+      });
+      return false;
     },
   });
 };
 
 //滚动条回到原位
 const scrollBy = inject<Function>("scrollBy");
-const remeberScroll = ref(0);
+const rememberScroll = ref(0);
 // 跳转路由守卫
 onBeforeRouteLeave((to, from, next) => {
   // 将当前位置进行一个状态保存
-  remeberScroll.value = distanceToTop.value;
+  rememberScroll.value = distanceToTop.value;
   next();
 });
 //   组件激活
 onActivated(() => {
-  scrollBy ? scrollBy(remeberScroll.value) : "";
+  scrollBy ? scrollBy(rememberScroll.value) : "";
 });
 </script>
 

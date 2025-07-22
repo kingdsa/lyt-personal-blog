@@ -316,7 +316,6 @@ const saveUserName = () => {
     return;
   }
   editUserInfoLoading.value = true;
-  message.info("参数：" + JSON.stringify(userNewName.value));
   //发送修改用户名请求
   setTimeout(() => {
     editUserInfoLoading.value = false;
@@ -337,8 +336,6 @@ const savePwd = () => {
     return;
   }
   editUserInfoLoading.value = true;
-  message.info("参数：" + JSON.stringify(updatePwdForm));
-
   //发送保存密码请求
   setTimeout(() => {
     editUserInfoLoading.value = false;
@@ -362,8 +359,6 @@ const saveHead = () => {
 const saveInfo = () => {
   editUserInfoLoading.value = true;
   //发送保存个人信息请求
-  message.info("参数：" + JSON.stringify(userInfo.value));
-
   //
   setTimeout(() => {
     editUserInfoLoading.value = false;

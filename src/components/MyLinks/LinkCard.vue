@@ -131,7 +131,6 @@ if(!linkName){
     return;
 }
   linkLoading.value=true;
-  message.info('参数：'+JSON.stringify(editLinkModel.value))
 if(!isAdd){
   update_Links();
 

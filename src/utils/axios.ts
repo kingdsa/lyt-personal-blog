@@ -76,7 +76,7 @@ service.interceptors.response.use(
 
       switch (error.response.status) {
         case 400:
-          message = error.response.data.Message || error.response.data.error_description;
+          message = error.response.data.msg;
           type = "error";
           break;
         case 403: // token 没有权限操作
@@ -92,12 +92,11 @@ service.interceptors.response.use(
           type = "warning";
           break;
         case 500:
-          message = error.response.data.message || error.response.data.Message;
+          message = error.response.data.msg;
           type = "warning";
           break;
       }
     } else if (error.request) {
-      console.warn(error);
       message = "网络异常";
       type = "error";
     } else {
@@ -105,17 +104,12 @@ service.interceptors.response.use(
         message = "请求超时, 请重试!";
         type = "warning";
       } else {
-        message = error.message || "未知错误";
+        message = error.msg || "未知错误";
         type = "error";
       }
     }
 
-    // ElNotification({
-    //   message,
-    //   type,
-    // });
     useMessage().error(message);
-
     return { code: 4000, msg: message };
   }
 );

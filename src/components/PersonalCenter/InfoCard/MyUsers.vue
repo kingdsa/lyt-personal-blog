@@ -344,8 +344,6 @@ const submitBtn=()=>{
     labelNameRef.value?.focus();
     return;
   }
-  message.info('参数:'+JSON.stringify(updateForm.value))
-
   //判断新增还是编辑
   if(isupdate.value){
     update_AadminLabels();
@@ -371,8 +369,6 @@ const deleteBtn=(row:any)=>{
     positiveText: '确定',
     negativeText: '不确定',
     onPositiveClick: () => {
-      message.info('参数:'+JSON.stringify(row))
-
       //执行删除方法
     }})
 
