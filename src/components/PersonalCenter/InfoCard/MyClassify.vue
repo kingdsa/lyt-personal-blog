@@ -115,14 +115,6 @@
                 show-count
               />
             </n-form-item-row>
-            <n-form-item-row label="字典值">
-              <n-input
-                v-model:value="updateForm.value"
-                placeholder="请输入字典值（最多100个字符）"
-                maxlength="100"
-                show-count
-              />
-            </n-form-item-row>
             <n-form-item-row label="描述">
               <n-input
                 ref="labelDescribeRef"
@@ -197,7 +189,6 @@ const total = ref(0);
 const updateForm = ref<DictInputDTO>({
   type: "",
   name: "",
-  value: "",
   description: "",
   isEnable: true,
   sort: 0,
@@ -329,10 +320,12 @@ get_AdminLabelsAll();
 const addBtn = () => {
   updateForm.value.type = "";
   updateForm.value.name = "";
-  updateForm.value.value = "";
   updateForm.value.description = "";
   updateForm.value.isEnable = true;
   updateForm.value.sort = 0;
+  if (updateForm.value.id) {
+    delete updateForm.value.id;
+  }
   editShowModal.value = true;
   isUpdate.value = false;
 };
@@ -365,12 +358,6 @@ const submitBtn = () => {
   }
   if (name.length > 100) {
     message.error("字典名称长度应在1-100个字符之间");
-    return;
-  }
-  
-  // 验证字典值（可选）
-  if (updateForm.value.value && updateForm.value.value.length > 100) {
-    message.error("字典值长度不能超过100个字符");
     return;
   }
   

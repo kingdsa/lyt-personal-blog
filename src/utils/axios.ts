@@ -3,7 +3,6 @@ import qs from "qs";
 import { kDebug } from "./index";
 import type { AxiosRequestConfig } from "axios";
 import { CUSTOM_HEADERS } from './constants';
-import { useMessage } from 'naive-ui';
 
 // 创建 axios 实例
 const service = axios.create({
@@ -67,13 +66,18 @@ service.interceptors.response.use(
   async (error: any) => {
     let message: string = "系统错误";
     let type: "error" | "success" | "warning" | "info" = "error";
+    
     if (error.response) {
       // 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
       if (error.response.status === 401) {
-        useMessage().error("您的会话已过期，请重新登录");
+        // 检查全局 $message 是否可用
+        if ((window as any).$message) {
+          (window as any).$message.error("您的会话已过期，请重新登录");
+        } else {
+          console.error("您的会话已过期，请重新登录");
+        }
         return { code: 401, msg: "登录过期" };
       }
-
       switch (error.response.status) {
         case 400:
           message = error.response.data.msg;
@@ -95,6 +99,10 @@ service.interceptors.response.use(
           message = error.response.data.msg;
           type = "warning";
           break;
+        default:
+          message = error.response.data.msg;
+          type = "error";
+          break;
       }
     } else if (error.request) {
       message = "网络异常";
@@ -109,7 +117,12 @@ service.interceptors.response.use(
       }
     }
 
-    useMessage().error(message);
+    // 检查全局 $message 是否可用，如果不可用则使用 console 输出
+    if ((window as any).$message && (window as any).$message[type]) {
+      (window as any).$message[type](message);
+    } else {
+      console.error(`Message (${type}):`, message);
+    }
     return { code: 4000, msg: message };
   }
 );
