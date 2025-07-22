@@ -9,194 +9,169 @@
       >
         <n-card class="margin-bottom10" :embedded="isdarkTheme" :bordered="!isdarkTheme">
           <template #header>
-            <n-h2 prefix="bar" class="margin-bottom0px" align-text>分类列表</n-h2>
+            <n-h2 prefix="bar" class="margin-bottom0px" align-text>分类管理</n-h2>
           </template>
-
           <template #header-extra>
             <n-button strong secondary @click="router.back()">返回</n-button>
           </template>
         </n-card>
-        <n-card :embedded="isdarkTheme" :bordered="!isdarkTheme">
-          <!--     搜索条件-->
-          <n-form label-placement="left">
-            <n-space>
-              <n-form-item label="关键字">
-                <n-input
-                  clearable
-                  v-model:value="queryData.keyword"
-                  placeholder="请输入分类名称"
-                />
-              </n-form-item>
-              <n-form-item>
-                <n-button type="info" @click="searchBtn">查询</n-button>
-                &nbsp;
-                <n-button type="success" @click="addBtn">新增</n-button>
-              </n-form-item>
-            </n-space>
-          </n-form>
 
-          <n-spin :show="tableShow">
-            <n-data-table
-              :bordered="false"
-              :single-line="false"
-              :columns="columns"
-              :data="tableData"
-              :pagination="false"
-              :scroll-x="1000"
-            />
-            <br />
-            <n-pagination
-              v-model:page="queryData.page"
-              v-model:page-size="queryData.pageSize"
-              :item-count="total"
-              show-size-picker
-              @update:page="pageChange"
-              @update-page-size="pageSizeChange"
-              :page-sizes="[
-                {
-                  label: '10 每页',
-                  value: 10,
-                },
-                {
-                  label: '20 每页',
-                  value: 20,
-                },
-                {
-                  label: '50 每页',
-                  value: 50,
-                },
-                {
-                  label: '100 每页',
-                  value: 100,
-                },
-              ]"
-            >
-              <template #suffix>共 {{ total }} 条</template>
-            </n-pagination>
-          </n-spin>
+        <!-- 左右布局 -->
+        <n-card :embedded="isdarkTheme" :bordered="!isdarkTheme">
+          <n-layout has-sider>
+            <!-- 左侧树形结构 -->
+            <n-layout-sider :width="200" :collapsed-width="0" :show-trigger="false" bordered>
+              <n-card size="small" :bordered="false">
+                <n-spin :show="treeLoading">
+                  <n-tree
+                    ref="treeRef"
+                    :data="treeData"
+                    :node-props="nodeProps"
+                    :render-label="renderLabel"
+                    block-line
+                    expand-on-click
+                    selectable
+                    @update:selected-keys="handleTreeSelect"
+                  />
+                </n-spin>
+              </n-card>
+            </n-layout-sider>
+
+            <!-- 右侧内容区域 -->
+            <n-layout>
+              <n-card size="small" :bordered="false">
+                <template #header>
+                  <n-space align="center" justify="space-between">
+                    <n-space align="center">
+                      <n-icon :size="18">
+                        <ListOutline />
+                      </n-icon>
+                      <span>
+                        {{
+                          selectedCategory ? `${selectedCategory.name} - 数据管理` : "全部数据管理"
+                        }}
+                      </span>
+                    </n-space>
+                    <n-button type="primary" @click="handleTableAdd">
+                      <template #icon>
+                        <n-icon>
+                          <AddOutline />
+                        </n-icon>
+                      </template>
+                      新增数据
+                    </n-button>
+                  </n-space>
+                </template>
+
+                <!-- 搜索区域 -->
+                <n-space style="margin-bottom: 16px" align="center">
+                  <n-input
+                    v-model:value="searchKeyword"
+                    placeholder="搜索名称、类型或描述..."
+                    style="width: 200px"
+                    clearable
+                    @keyup.enter="handleSearch"
+                  >
+                    <template #prefix>
+                      <n-icon :size="16">
+                        <DocumentTextOutline />
+                      </n-icon>
+                    </template>
+                  </n-input>
+                  <n-button type="primary" @click="handleSearch">搜索</n-button>
+                  <n-button @click="clearSearch">重置</n-button>
+                </n-space>
+
+                <!-- 数据表格 -->
+                <n-data-table
+                  :columns="tableColumns"
+                  :data="paginatedData"
+                  :loading="tableLoading"
+                  :row-key="(row: DictInputDTO) => row.id"
+                  :scroll-x="1200"
+                  size="small"
+                  striped
+                  bordered
+                />
+
+                <!-- 分页 -->
+                <n-space justify="end" style="margin-top: 16px">
+                  <n-pagination
+                    v-model:page="tablePage"
+                    v-model:page-size="tablePageSize"
+                    :item-count="filteredTableData.length"
+                    :page-sizes="[10, 20, 50, 100]"
+                    show-size-picker
+                    show-quick-jumper
+                  >
+                    <template #prefix="{ itemCount }">总共 {{ itemCount }} 条</template>
+                  </n-pagination>
+                </n-space>
+              </n-card>
+            </n-layout>
+          </n-layout>
         </n-card>
       </n-gi>
     </n-grid>
-    <!--  编辑-->
-    <n-modal v-model:show="editShowModal">
-      <n-card
-        :style="{ width: clientWidth > 1025 ? '500px' : '96%' }"
-        :title="isUpdate ? '正在编辑[' + updateName + ']分类' : '正在新增分类'"
-        :bordered="false"
-        size="huge"
-        role="dialog"
-        aria-modal="true"
-      >
-        <template #header-extra>
-          <n-button tertiary @click="editShowModal = false">
-            <template #icon>
-              <n-icon size="22">
-                <CloseOutline />
-              </n-icon>
-            </template>
-          </n-button>
-        </template>
-        <n-spin :show="editLoading">
-          <n-form label-width="80px" label-placement="left">
-            <n-form-item-row label="字典类型" required>
-              <n-input
-                v-model:value="updateForm.type"
-                placeholder="请输入字典类型（1-50个字符）"
-                maxlength="50"
-                show-count
-              />
-            </n-form-item-row>
-            <n-form-item-row label="字典名称" required>
-              <n-input
-                ref="labelNameRef"
-                v-model:value="updateForm.name"
-                placeholder="请输入字典名称（1-100个字符）"
-                maxlength="100"
-                show-count
-              />
-            </n-form-item-row>
-            <n-form-item-row label="描述">
-              <n-input
-                ref="labelDescribeRef"
-                v-model:value="updateForm.description"
-                placeholder="请输入描述（最多255个字符）"
-                type="textarea"
-                maxlength="255"
-                show-count
-                :autosize="{
-                  minRows: 2,
-                  maxRows: 5,
-                }"
-              />
-            </n-form-item-row>
-            <n-form-item-row label="启用状态">
-              <n-switch
-                v-model:value="updateForm.isEnable"
-                :checked-value="true"
-                :unchecked-value="false"
-              >
-                <template #checked>启用</template>
-                <template #unchecked>禁用</template>
-              </n-switch>
-            </n-form-item-row>
-            <n-form-item-row label="排序">
-              <n-input-number
-                v-model:value="updateForm.sort"
-                placeholder="请输入排序数字"
-                :min="0"
-                :step="1"
-              />
-            </n-form-item-row>
-          </n-form>
-          <n-space justify="center">
-            <n-button @click="editShowModal = false">取消</n-button>
-            &nbsp;
-            <n-button type="info" @click="submitBtn">确定</n-button>
-          </n-space>
-        </n-spin>
-      </n-card>
-    </n-modal>
+
+    <!-- 右键菜单 -->
+    <n-dropdown
+      placement="bottom-start"
+      trigger="manual"
+      :x="contextMenuX"
+      :y="contextMenuY"
+      :options="contextMenuOptions"
+      :show="showContextMenu"
+      :on-clickoutside="onContextMenuClickoutside"
+      @select="handleContextMenuSelect"
+    />
+
+    <!-- 编辑左侧分类组件 -->
+    <MyClassifyContent
+      v-model:visible="editModalVisible"
+      :is-update="isUpdate"
+      :update-name="updateName"
+      :form-data="selectedFormData"
+      @success="handleEditSuccess"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { VaeStore } from "@/store";
 import BackgroundPlate from "@/components/background/BackgroundPlate.vue";
+import MyClassifyContent from "./components/MyClassifyContent.vue";
 import { storeToRefs } from "pinia";
-import { inject, onActivated, reactive, ref, h } from "vue";
-import { onBeforeRouteLeave, useRouter } from "vue-router";
-import { CloseOutline } from "@vicons/ionicons5";
-
+import { reactive, ref, h, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import {
-  NButton,
-  useMessage,
-  NGradientText,
-  useDialog,
-  InputInst,
-} from "naive-ui";
-import Dictionary_Api from '@/apis/dictionary';
-import { DictInputDTO, QueryDictionaryDto } from '@/apis/dictionary/types';
-import dayjs from 'dayjs';
+  ListOutline,
+  DocumentTextOutline,
+  AddOutline,
+  CreateOutline,
+  TrashOutline,
+} from "@vicons/ionicons5";
 
-const tableShow = ref(false);
-const editLoading = ref(false);
-const editShowModal = ref(false);
+import { NButton, useMessage, useDialog, TreeOption, DropdownOption } from "naive-ui";
+import Dictionary_Api from "@/apis/dictionary";
+import { DictInputDTO, QueryDictionaryDto } from "@/apis/dictionary/types";
+
+// Refs
+const treeLoading = ref(false);
+const tableLoading = ref(false);
+const editModalVisible = ref(false);
 const isUpdate = ref(false);
-const deleteLoading = ref(false);
 const updateName = ref("");
-const total = ref(0);
+const selectedFormData = ref<DictInputDTO | undefined>(undefined);
+const selectedCategory = ref<DictInputDTO | null>(null);
 
-const updateForm = ref<DictInputDTO>({
-  type: "",
-  name: "",
-  description: "",
-  isEnable: true,
-  sort: 0,
-});
+// Context Menu
+const showContextMenu = ref(false);
+const contextMenuX = ref(0);
+const contextMenuY = ref(0);
+const contextMenuNode = ref<DictInputDTO | null>(null);
+
 const message = useMessage();
-
-const labelNameRef = ref<InputInst | null>(null);
-
 const router = useRouter();
 const dialog = useDialog();
 
@@ -205,230 +180,385 @@ const queryData = reactive<QueryDictionaryDto>({
   keyword: "",
   isEnable: true,
   page: 1,
-  pageSize: 10,
+  pageSize: 100, // 树形数据加载更多
 });
+
 const store = VaeStore();
-let { clientWidth, distanceToBottom, distanceToTop, userInfo, isdarkTheme } = storeToRefs(store);
+let { clientWidth, isdarkTheme } = storeToRefs(store);
 
-//清空
-const emptyBtn = () => {
-  queryData.keyword = "";
-  queryData.type = "";
-  queryData.isEnable = true;
-  queryData.page = 1;
-  queryData.pageSize = 10;
-};
-
-const pageChange = (page: number) => {
-  queryData.page = page;
-  get_AdminLabelsAll();
-};
-const pageSizeChange = (limit: number) => {
-  queryData.page = limit;
-  queryData.page = 1;
-  get_AdminLabelsAll();
-};
-
-const columns = [
-  {
-    title: "分类名称",
-    ellipsis: true,
-    width: "170",
-    key: "name",
-  },
-  {
-    title: "描述",
-    ellipsis: true,
-    key: "description",
-  },
-  {
-    title: "创建时间",
-    width: "180",
-    key: "createdAt",
-    render(row: DictInputDTO) {
-      return dayjs(row.createdAt).format("YYYY-MM-DD HH:mm:ss");
-    },
-  },
-
-  {
-    title: "操作",
-    key: "actions",
-    fixed: "right",
-    width: 160,
-    render(row: any) {
-      return [
-        h(
-          NButton,
-          {
-            style: "margin:0px 5px",
-            type: "info",
-            strong: true,
-            secondary: true,
-            size: "small",
-            onClick: () => {
-              editBtn(row);
-            },
-          },
-          { default: () => "编辑" }
-        ),
-        h(
-          NButton,
-          {
-            style: "margin:0px 5px",
-            type: "error",
-            strong: true,
-            secondary: true,
-            size: "small",
-            onClick: () => {
-              deleteBtn(row);
-            },
-          },
-          { default: () => "删除" }
-        ),
-      ];
-    },
-  },
-];
-
+// Tree Data
+const treeData = ref<TreeOption[]>([]);
 const tableData = ref<DictInputDTO[]>([]);
-//查询
-const searchBtn = () => {
-  queryData.page = 1;
-  get_AdminLabelsAll();
-};
-//获取所有
-const get_AdminLabelsAll = async () => {
-  tableShow.value = true;
+const filteredTableData = ref<DictInputDTO[]>([]);
+const searchKeyword = ref("");
+const tablePage = ref(1);
+const tablePageSize = ref(10);
+
+// 获取所有数据
+const onGetLeftTreeList = async () => {
+  treeLoading.value = true;
   const copyData = JSON.parse(JSON.stringify(queryData));
-  Object.keys(copyData).forEach(key => {
-    if (copyData[key] === null || copyData[key] === undefined || copyData[key] === '') {
+  Object.keys(copyData).forEach((key) => {
+    if (copyData[key] === null || copyData[key] === undefined || copyData[key] === "") {
       delete copyData[key];
     }
   });
   const res = await Dictionary_Api.getDictionary(copyData);
   if (res.code === 200) {
     tableData.value = res.data.list;
-    total.value = res.data.total;
+    // 转换为树形数据
+    convertToTreeData(res.data.list);
+    // 更新筛选后的表格数据
+    updateFilteredTableData();
   } else {
     message.error(res.msg);
   }
-  tableShow.value = false;
+  treeLoading.value = false;
 };
-get_AdminLabelsAll();
 
-//新增
-const addBtn = () => {
-  updateForm.value.type = "";
-  updateForm.value.name = "";
-  updateForm.value.description = "";
-  updateForm.value.isEnable = true;
-  updateForm.value.sort = 0;
-  if (updateForm.value.id) {
-    delete updateForm.value.id;
-  }
-  editShowModal.value = true;
-  isUpdate.value = false;
+// 将表格数据转换为树形数据
+const convertToTreeData = (data: DictInputDTO[]) => {
+  const rootNode: TreeOption = {
+    key: "all",
+    label: "全部分类",
+    children: [],
+  };
+
+  data.forEach((item) => {
+    rootNode.children?.push({
+      key: item.id || item.type,
+      label: item.name,
+      data: item,
+    });
+  });
+
+  treeData.value = [rootNode];
 };
-//编辑
-const editBtn = (row: DictInputDTO) => {
-  updateName.value = row.name;
-  updateForm.value = { ...row };
-  editShowModal.value = true;
-  isUpdate.value = true;
+
+// 树节点属性
+const nodeProps = ({ option }: { option: TreeOption }) => {
+  return {
+    onContextmenu(e: MouseEvent): void {
+      e.preventDefault();
+      contextMenuNode.value = (option.data as DictInputDTO) || null;
+      showContextMenu.value = true;
+      contextMenuX.value = e.clientX;
+      contextMenuY.value = e.clientY;
+    },
+  };
 };
-//确认
-const submitBtn = () => {
-  let { type, name } = updateForm.value;
-  
-  // 验证字典类型
-  if (!type || type.trim() === '') {
-    message.error("字典类型不能为空");
-    return;
+
+// 渲染树节点标签
+const renderLabel = ({ option }: { option: TreeOption }) => {
+  if (option.key === "all") {
+    return h("span", { style: { fontWeight: "bold", color: "#1890ff" } }, option.label as string);
   }
-  if (type.length > 50) {
-    message.error("字典类型长度应在1-50个字符之间");
-    return;
-  }
-  
-  // 验证字典名称
-  if (!name || name.trim() === '') {
-    message.error("字典名称不能为空");
-    labelNameRef.value?.focus();
-    return;
-  }
-  if (name.length > 100) {
-    message.error("字典名称长度应在1-100个字符之间");
-    return;
-  }
-  
-  // 验证描述（可选）
-  if (updateForm.value.description && updateForm.value.description.length > 255) {
-    message.error("描述长度不能超过255个字符");
-    return;
-  }
-  
-  handleSubmit();
+  return option.label;
 };
-const handleSubmit = () => {
-  editLoading.value = true;
-  const fun = isUpdate.value ? Dictionary_Api.updateDictionary : Dictionary_Api.createDictionary;
-  const copyData = JSON.parse(JSON.stringify(updateForm.value));
-  delete copyData.createdAt;
-  delete copyData.updatedAt;
-  delete copyData.deletedAt;
-  fun(copyData).then(res => {
-    if (res.code === 200) {
-      message.success(isUpdate.value ? "编辑成功" : "新增成功");
-      editShowModal.value = false;
-      get_AdminLabelsAll();
+
+// 右键菜单选项
+const contextMenuOptions = computed((): DropdownOption[] => {
+  const isRootNode = contextMenuNode.value === null;
+
+  if (isRootNode) {
+    return [
+      {
+        label: "新增分类",
+        key: "add",
+        icon: () =>
+          h(AddOutline, {
+            style: {
+              color: "#18a058",
+              fontSize: "12px",
+              transition: "all 0.2s ease",
+            },
+          }),
+      },
+    ];
+  } else {
+    return [
+      {
+        label: "编辑分类",
+        key: "edit",
+        icon: () =>
+          h(CreateOutline, {
+            style: {
+              color: "#2080f0",
+              fontSize: "12px",
+              transition: "all 0.2s ease",
+            },
+          }),
+      },
+      {
+        label: "删除分类",
+        key: "delete",
+        icon: () =>
+          h(TrashOutline, {
+            style: {
+              color: "#d03050",
+              fontSize: "16px",
+              transition: "all 0.2s ease",
+            },
+          }),
+      },
+    ];
+  }
+});
+
+// 处理树节点选择
+const handleTreeSelect = (keys: Array<string | number>) => {
+  if (keys.length > 0) {
+    const key = keys[0];
+    if (key === "all") {
+      selectedCategory.value = null;
     } else {
-      message.error(res.msg);
+      const foundItem = tableData.value.find((item) => (item.id || item.type) === key);
+      selectedCategory.value = foundItem || null;
     }
-  }).finally(() => {
-    editLoading.value = false;
-  })
+    updateFilteredTableData();
+  }
 };
 
-//删除
-const deleteBtn = (row: DictInputDTO) => {
-  let { name, id } = row;
+// 更新筛选后的表格数据
+const updateFilteredTableData = () => {
+  let filtered = [...tableData.value];
+
+  // 根据选中的分类筛选
+  if (selectedCategory.value) {
+    filtered = filtered.filter((item) => item.type === selectedCategory.value!.type);
+  }
+
+  // 根据搜索关键词筛选
+  if (searchKeyword.value.trim()) {
+    const keyword = searchKeyword.value.toLowerCase();
+    filtered = filtered.filter(
+      (item) =>
+        (item.name && item.name.toLowerCase().includes(keyword)) ||
+        (item.type && item.type.toLowerCase().includes(keyword)) ||
+        (item.description && item.description.toLowerCase().includes(keyword))
+    );
+  }
+
+  filteredTableData.value = filtered;
+  tablePage.value = 1; // 重置分页
+};
+
+// 搜索处理
+const handleSearch = () => {
+  updateFilteredTableData();
+};
+
+// 清除搜索
+const clearSearch = () => {
+  searchKeyword.value = "";
+  updateFilteredTableData();
+};
+
+// 表格列定义
+const tableColumns = [
+  {
+    title: "ID",
+    key: "id",
+    width: 80,
+    ellipsis: {
+      tooltip: true,
+    },
+  },
+  {
+    title: "字典类型",
+    key: "type",
+    width: 120,
+    ellipsis: {
+      tooltip: true,
+    },
+  },
+  {
+    title: "字典名称",
+    key: "name",
+    width: 150,
+    ellipsis: {
+      tooltip: true,
+    },
+  },
+  {
+    title: "字典值",
+    key: "value",
+    width: 120,
+    ellipsis: {
+      tooltip: true,
+    },
+  },
+  {
+    title: "描述",
+    key: "description",
+    width: 200,
+    ellipsis: {
+      tooltip: true,
+    },
+  },
+  {
+    title: "状态",
+    key: "isEnable",
+    width: 80,
+    render: (row: DictInputDTO) => {
+      return h(
+        "n-tag",
+        {
+          type: row.isEnable ? "success" : "error",
+          size: "small",
+        },
+        () => (row.isEnable ? "启用" : "禁用")
+      );
+    },
+  },
+  {
+    title: "排序",
+    key: "sort",
+    width: 80,
+    sorter: (row1: DictInputDTO, row2: DictInputDTO) => (row1.sort || 0) - (row2.sort || 0),
+  },
+  {
+    title: "创建时间",
+    key: "createdAt",
+    width: 150,
+    render: (row: DictInputDTO) => {
+      return row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "";
+    },
+  },
+  {
+    title: "操作",
+    key: "actions",
+    width: 150,
+    fixed: "right" as const,
+    render: (row: DictInputDTO) => {
+      return h("n-space", { size: "small" }, () => [
+        h(
+          NButton,
+          {
+            size: "small",
+            type: "primary",
+            secondary: true,
+            onClick: () => handleTableEdit(row),
+          },
+          () => "编辑"
+        ),
+        h(
+          NButton,
+          {
+            size: "small",
+            type: "error",
+            secondary: true,
+            onClick: () => handleTableDelete(row),
+          },
+          () => "删除"
+        ),
+      ]);
+    },
+  },
+];
+
+// 表格操作方法
+const handleTableEdit = (item: DictInputDTO) => {
+  selectedFormData.value = { ...item };
+  editModalVisible.value = true;
+  isUpdate.value = true;
+  updateName.value = item.name;
+};
+
+const handleTableDelete = (item: DictInputDTO) => {
   dialog.error({
-    title: `删除分类`,
-    content: `是否删除[${name}]分类？`,
+    title: `删除字典项`,
+    content: `是否删除[${item.name}]字典项？`,
     positiveText: "确定",
     negativeText: "取消",
-    loading: deleteLoading.value,
     onPositiveClick: () => {
-      deleteLoading.value = true;
-      Dictionary_Api.deleteDictionary(id!).then(res => {
-        if (res.code === 200) {
-          message.success("删除成功");
-          get_AdminLabelsAll();
-          return true;
-        } else {
-          message.error(res.msg);
-        }
-      }).finally(() => {
-        deleteLoading.value = false;
+      return new Promise((resolve) => {
+        Dictionary_Api.deleteDictionary(item.id!)
+          .then((res) => {
+            if (res.code === 200) {
+              message.success("删除成功");
+              onGetLeftTreeList();
+              resolve(true);
+            } else {
+              message.error(res.msg);
+              resolve(false);
+            }
+          })
+          .catch(() => {
+            resolve(false);
+          });
       });
-      return false;
     },
   });
 };
 
-//滚动条回到原位
-const scrollBy = inject<Function>("scrollBy");
-const rememberScroll = ref(0);
-// 跳转路由守卫
-onBeforeRouteLeave((to, from, next) => {
-  // 将当前位置进行一个状态保存
-  rememberScroll.value = distanceToTop.value;
-  next();
+const handleTableAdd = () => {
+  selectedFormData.value = selectedCategory.value
+    ? {
+        type: selectedCategory.value.type,
+        name: "",
+        value: "",
+        description: "",
+        isEnable: true,
+        sort: 0,
+      }
+    : {
+        type: "",
+        name: "",
+        value: "",
+        description: "",
+        isEnable: true,
+        sort: 0,
+      };
+  editModalVisible.value = true;
+  isUpdate.value = false;
+  updateName.value = "";
+};
+
+// 分页数据
+const paginatedData = computed(() => {
+  const start = (tablePage.value - 1) * tablePageSize.value;
+  const end = start + tablePageSize.value;
+  return filteredTableData.value.slice(start, end);
 });
-//   组件激活
-onActivated(() => {
-  scrollBy ? scrollBy(rememberScroll.value) : "";
+
+// 处理右键菜单选择
+const handleContextMenuSelect = (key: string) => {
+  showContextMenu.value = false;
+
+  switch (key) {
+    case "add":
+      handleTableAdd();
+      break;
+    case "edit":
+      if (contextMenuNode.value) {
+        handleTableEdit(contextMenuNode.value);
+      }
+      break;
+    case "delete":
+      if (contextMenuNode.value) {
+        handleTableDelete(contextMenuNode.value);
+      }
+      break;
+  }
+};
+
+// 右键菜单点击外部
+const onContextMenuClickoutside = () => {
+  showContextMenu.value = false;
+};
+
+// 编辑成功回调
+const handleEditSuccess = () => {
+  onGetLeftTreeList();
+};
+onMounted(() => {
+  onGetLeftTreeList();
 });
 </script>
 
-<style scoped></style>
+<style scoped lang="less">
+:deep(.n-layout-sider-scroll-container) {
+  padding: 0 !important;
+}
+</style>
