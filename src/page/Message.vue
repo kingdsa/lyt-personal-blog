@@ -27,7 +27,7 @@
 
           <template #description>
             目前工作：前端开发🎗<br />
-            联系邮箱：310485385@qq.com<br />
+            联系邮箱：3104853851@qq.com<br />
             这个人很简单，没什么好说的。
           </template>
           <template #header-extra>
